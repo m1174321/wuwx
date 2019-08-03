@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>图书增加</title>
+    <link href="js/bootstrap-3.3.7-dist/css/bootstrap.min.css" type="text/css" rel="stylesheet">
+    <link href="js/bootstarp-date/css/bootstrap-datetimepicker.min.css" type="text/css" rel="stylesheet">
+    <link href="js/DataTable/datatables.min.css" type="text/css" rel="stylesheet">
+
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="panel panel-default" style="margin-top:100px">
+            <div class="panel-heading">
+                <h3 class="panel-title">图书添加</h3>
+            </div>
+            <div class="panel-body">
+                <form class="form-horizontal" id="registerForm">
+                    <div class="form-group">
+                        <label  class="col-sm-1 control-label">图书名</label>
+                        <div class="col-sm-3">
+                            <input type="text"   class="form-control" id="bookName" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-1 control-label">价格</label>
+                        <div class="col-sm-3">
+                            <input type="text"   id="price" class="form-control" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-1 control-label">作者</label>
+                        <div class="col-sm-3">
+                            <input type="text"  id="author" class="form-control" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label  class="col-sm-1 control-label">出版日期</label>
+                        <div class="col-sm-3">
+                            <input type="text" id="publicationDate" class="form-control"   readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label  class="col-sm-1 control-label">出版社</label>
+                        <div class="col-sm-3">
+                            <input type="text"   id="publication" class="form-control" >
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">类型</label>
+                        <div class="col-sm-2" id="bookType">
+                        </div>
+                    </div>
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="button" onclick="add()" class="btn btn-primary" style="width:200px;margin-left:-100px">添加</button>
+                    </div>
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+<script src="js/jquery-3.3.1.js"></script>
+<script src="js/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script src="js/bootstarp-date/js/bootstrap-datetimepicker.min.js"></script>
+<script src="js/DataTable/datatables.min.js"></script>
+<script src="js/bootstarp-date/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+<script>
+    $(function () {
+        time();
+        bookType();
+    })
+    function time() {
+        $('#publicationDate').datetimepicker({
+            autoclose: true,
+            minView: "month",
+            format: "yyyy-mm-dd",
+            language: "zh-CN"
+        });
+    }
+    function add() {
+        var bookName = $("#bookName").val();
+        var price = $("#price").val();
+        var author = $("#author").val();
+        var publicationDate = $("#publicationDate").val();
+        var publication = $("#publication").val();
+        var tid = $("#select").val();
+        var param={};
+        param.bookName=bookName;
+        param.price=price;
+        param.author=author;
+        param.publicationDate=publicationDate;
+        param.publication=publication;
+        param.tid=tid;
+        $.ajax({
+            url:"http://localhost:9100/api/books",
+            type:"POST",
+            data:param,
+            success:function(result) {
+            if (result.code==200){
+               location.href="/";
+            }
+            }
+        })
+    }
+    function bookType() {
+        $.ajax({
+            url:"http://localhost:9100/api/bookType",
+            success:function (data) {
+                if (data.code==200){
+                    var list=data.data;
+                    var selectStr="<select class=\"form-control\" id='select'><option value='-1'>请选择</option>";
+                    for(var i=0;i<list.length;i++){
+                        var id = list[i].id;
+                        var typeName = list[i].typeName;
+                        selectStr+="<option value='"+id+"'>"+typeName+"</option>";
+                    }
+                    selectStr+="</select>";
+                    $("#bookType").append(selectStr);
+                }
+            }
+        })
+    }
+</script>
+</body>
+</html>
